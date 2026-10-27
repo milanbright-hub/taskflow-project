@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} · TaskFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='taskflow.css') }}">
+</head>
+<body class="auth-shell">
+  <a class="auth-brand" href="{{ url_for('login') }}"><span class="brand-mark">T</span><strong>TaskFlow</strong></a>
+  <main class="auth-layout">
+    <section class="auth-story"><span class="story-kicker">A CALMER WAY TO GET THINGS DONE</span><h1>Make room for<br>meaningful work.</h1><p>Bring projects, people, and progress into one clear view.</p><div class="story-art" aria-hidden="true"><div class="art-window"><div class="art-dots"><i></i><i></i><i></i></div><div class="art-content"><span class="art-square"></span><div class="art-lines"><i></i><i></i></div><span class="art-progress"><i></i></span><div class="art-people"><b>A</b><b>M</b><b>J</b></div></div><div class="art-note"><b>Project on track</b><small>Milestone completed</small><span>✓</span></div></div></div></section>
+    <section class="auth-panel"><div class="auth-panel-inner"><p class="eyebrow">{{ 'GET STARTED' if mode == 'register' else 'YOUR WORKSPACE' }}</p><h2>{{ title }}</h2><p class="auth-subtitle">{{ 'Create your account and start organizing the work.' if mode == 'register' else 'Sign in to pick up where you left off.' }}</p>
+      {% with notices = get_flashed_messages(with_categories=true) %}{% if notices %}<div class="flash-stack">{% for category, message in notices %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+      <form method="post" class="form-stack">
+        {% if mode == 'register' %}<label for="name">Your name</label><input id="name" name="name" required maxlength="80" autocomplete="name" placeholder="Alex Morgan">{% endif %}
+        <label for="email">Work email</label><input id="email" name="email" type="email" required maxlength="254" autocomplete="email" placeholder="you@company.com">
+        <label for="password">Password</label><input id="password" name="password" type="password" required minlength="{{ 10 if mode == 'register' else 1 }}" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" placeholder="{{ 'At least 10 characters' if mode == 'register' else 'Enter your password' }}">
+        {% if mode == 'register' %}<p class="field-hint">Use at least 10 characters. Your password is stored as a secure hash.</p>{% endif %}
+        <button class="button primary button-wide" type="submit">{{ 'Create account' if mode == 'register' else 'Sign in' }} <span>→</span></button>
+      </form>
+      <p class="auth-switch">{{ 'Already have an account?' if mode == 'register' else 'New to TaskFlow?' }} <a href="{{ url_for('login' if mode == 'register' else 'register') }}">{{ 'Sign in' if mode == 'register' else 'Create an account' }}</a></p>
+      <p class="auth-note">Your workspace is private to your account.</p>
+    </div></section>
+  </main>
+</body>
+</html>

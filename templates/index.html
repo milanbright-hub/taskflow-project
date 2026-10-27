@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TaskFlow — Task & Workflow Assistant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar"><div class="brand"><span class="brand-mark">T</span><div><strong>TaskFlow</strong><small>Task & Workflow Assistant</small></div></div><span class="local-badge">Local demo · SQLite</span></header>
+  <main class="container">
+    <section class="hero"><div><p class="eyebrow">YOUR WORKSPACE</p><h1>Make progress, <span>one task at a time.</span></h1><p class="sub">Capture work, focus on priorities, and turn big goals into manageable steps.</p></div><div class="hero-symbol">✓</div></section>
+    {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="messages">{% for category, message in messages %}<p class="flash {{ category }}">{{ message }}</p>{% endfor %}</div>{% endif %}{% endwith %}
+    <section class="stats"><div class="stat"><span>Total tasks</span><strong>{{ stats.total }}</strong></div><div class="stat"><span>To do</span><strong>{{ stats.todo }}</strong></div><div class="stat"><span>In progress</span><strong>{{ stats.doing }}</strong></div><div class="stat"><span>Completed</span><strong>{{ stats.done }}</strong></div></section>
+    <div class="columns">
+      <section class="panel"><div class="panel-heading"><div><p class="eyebrow">QUICK CAPTURE</p><h2>Create a task</h2></div></div>
+        <form action="{{ url_for('create_task') }}" method="post" class="task-form">
+          <label for="title">Task title *</label><input id="title" name="title" maxlength="160" required placeholder="e.g. Prepare internship demo">
+          <label for="description">Description</label><textarea id="description" name="description" rows="3" maxlength="1000" placeholder="What needs to get done?"></textarea>
+          <div class="form-row"><div><label for="priority">Priority</label><select id="priority" name="priority"><option>Medium</option><option>High</option><option>Low</option></select></div><div><label for="due_date">Due date</label><input id="due_date" name="due_date" type="date"></div></div>
+          <button class="button primary" type="submit">+ Add task</button>
+        </form>
+      </section>
+      <section class="panel planner-panel"><div class="panel-heading"><div><p class="eyebrow">WORKFLOW PLANNER</p><h2>Break down a goal</h2></div><span class="sparkle">✳</span></div><p class="muted">Enter a goal and TaskFlow will create a starter checklist you can edit or reprioritize. This demo uses a local rule-based planner.</p>
+        <form action="{{ url_for('planner') }}" method="post" class="task-form"><label for="goal">Your goal</label><textarea id="goal" name="goal" rows="3" maxlength="500" required placeholder="e.g. Build a portfolio website"></textarea><button class="button secondary" type="submit">Generate starter tasks</button></form>
+        <details class="api-details"><summary>API demo</summary><code>POST /api/plan</code><p class="muted small">Send JSON with a <code>goal</code> field to receive a JSON checklist.</p></details>
+      </section>
+    </div>
+    <section class="panel task-list-panel"><div class="list-header"><div><p class="eyebrow">YOUR TASKS</p><h2>Task board <span class="count">{{ tasks|length }}</span></h2></div>
+      <form class="filters" method="get" action="{{ url_for('index') }}"><input aria-label="Search tasks" name="q" value="{{ q }}" placeholder="Search tasks"><select aria-label="Filter by status" name="status"><option {% if status == 'All' %}selected{% endif %}>All</option><option {% if status == 'To do' %}selected{% endif %}>To do</option><option {% if status == 'In progress' %}selected{% endif %}>In progress</option><option {% if status == 'Done' %}selected{% endif %}>Done</option></select><button class="button outline" type="submit">Filter</button></form>
+    </div>
+    {% if tasks %}<div class="tasks">{% for task in tasks %}<article class="task"><div class="task-main"><span class="priority-dot {{ task.priority|lower }}"></span><div class="task-copy"><h3 class="{% if task.status == 'Done' %}completed{% endif %}">{{ task.title }}</h3>{% if task.description %}<p>{{ task.description }}</p>{% endif %}<div class="task-meta"><span class="priority {{ task.priority|lower }}">{{ task.priority }} priority</span>{% if task.due_date %}<span>Due {{ task.due_date }}</span>{% endif %}</div></div></div><div class="task-actions"><form action="{{ url_for('update_task', task_id=task.id) }}" method="post"><select aria-label="Status for {{ task.title }}" name="status" onchange="this.form.submit()"><option {% if task.status == 'To do' %}selected{% endif %}>To do</option><option {% if task.status == 'In progress' %}selected{% endif %}>In progress</option><option {% if task.status == 'Done' %}selected{% endif %}>Done</option></select></form><form action="{{ url_for('delete_task', task_id=task.id) }}" method="post" onsubmit="return confirm('Delete this task?')"><button class="delete" type="submit" aria-label="Delete {{ task.title }}">Delete</button></form></div></article>{% endfor %}</div>{% else %}<div class="empty"><div class="empty-icon">☷</div><h3>No tasks found</h3><p>Try another filter or create your first task above.</p></div>{% endif %}
+    </section>
+    <footer>Built as a learning project · Flask + SQLite · Designed to be extended</footer>
+  </main>
+</body>
+</html>

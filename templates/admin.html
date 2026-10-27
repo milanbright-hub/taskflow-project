@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#eef1f6">
+  <title>{{ title }} · TaskFlow Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='taskflow.css') }}"><link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body class="app-shell admin-shell" data-admin-csrf-token="{{ admin_csrf_token }}">
+  <aside class="sidebar admin-sidebar" id="admin-sidebar">
+    <a class="brand" href="{{ url_for('admin_dashboard') }}"><span class="brand-mark">T</span><span class="brand-name">TaskFlow<small>PLATFORM CONTROL</small></span></a>
+    <div class="admin-console-label"><span class="console-pulse"></span>ADMIN CONSOLE</div>
+    <nav class="side-nav admin-side-nav" aria-label="Admin navigation">
+      <a class="nav-link {% if admin_page == 'overview' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}"><span>▦</span>Overview</a>
+      <a class="nav-link {% if admin_page in ['users','user_detail'] %}active{% endif %}" href="{{ url_for('admin_users') }}"><span>♧</span>Users</a>
+      <a class="nav-link {% if admin_page == 'projects' %}active{% endif %}" href="{{ url_for('admin_projects') }}"><span>▣</span>Projects</a>
+      <a class="nav-link {% if admin_page == 'tasks' %}active{% endif %}" href="{{ url_for('admin_tasks') }}"><span>☑</span>Tasks</a>
+      <a class="nav-link {% if admin_page == 'analytics' %}active{% endif %}" href="{{ url_for('admin_analytics') }}"><span>◫</span>Analytics</a>
+      <a class="nav-link {% if admin_page == 'audit' %}active{% endif %}" href="{{ url_for('admin_audit') }}"><span>▤</span>Audit logs</a>
+      {% if current_user.role == 'Super Admin' %}<a class="nav-link {% if admin_page == 'settings' %}active{% endif %}" href="{{ url_for('admin_settings') }}"><span>⚙</span>Settings</a>{% endif %}
+    </nav>
+    <div class="admin-sidebar-bottom"><a class="admin-workspace-link" href="{{ url_for('index') }}">↗ Open workspace</a><div class="sidebar-user admin-user"><span class="avatar admin-avatar">{{ current_user.name[:1]|upper }}</span><span class="user-label"><b>{{ current_user.name }}</b><small>{{ current_user.role }}</small></span><form action="{{ url_for('admin_logout') }}" method="post"><button class="icon-button" type="submit" title="Admin logout" aria-label="Admin logout">↗</button></form></div><form action="{{ url_for('admin_logout') }}" method="post"><button class="admin-logout-link" type="submit">⇥ &nbsp;Logout</button></form></div>
+  </aside>
+  <div class="main-area admin-main-area">
+    <header class="topbar admin-topbar"><button class="icon-button menu-button" id="admin-menu-toggle" aria-label="Toggle admin navigation">☰</button><div class="admin-topbar-title"><span class="console-pulse"></span>Platform administration <span class="admin-env">CONTROL</span></div><div class="topbar-actions"><a class="admin-workspace-link header-workspace-link" href="{{ url_for('index') }}">View workspace ↗</a><span class="topbar-divider"></span><span class="admin-role-label">{{ current_user.role }}</span><span class="avatar admin-avatar">{{ current_user.name[:1]|upper }}</span></div></header>
+    <main class="content admin-content"><div class="page-heading admin-page-heading"><div><p class="breadcrumb">TASKFLOW CONTROL <span>/</span> {{ title|upper }}</p><h1>{{ title }}</h1></div>{% if admin_page == 'users' %}<span class="admin-page-note">ACCOUNT ACCESS &amp; ROLES</span>{% elif admin_page in ['projects','tasks'] %}<span class="admin-page-note">PLATFORM-WIDE VIEW</span>{% endif %}</div>
+      {% with notices = get_flashed_messages(with_categories=true) %}{% if notices %}<div class="flash-stack">{% for category,message in notices %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+      {% include 'admin_' ~ admin_page ~ '.html' %}
+      <footer class="app-footer admin-footer">TASKFLOW PLATFORM CONTROL <span>·</span> Actions are recorded in the audit log</footer>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='admin.js') }}" defer></script>
+</body></html>

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} · TaskFlow Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='taskflow.css') }}"><link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body class="admin-auth-shell">
+  <a class="admin-auth-brand" href="{{ url_for('admin_login') }}"><span class="brand-mark">T</span><strong>TaskFlow <small>CONTROL</small></strong></a>
+  <main class="admin-auth-card"><span class="admin-auth-icon">⌘</span><p class="admin-eyebrow">RESTRICTED AREA</p><h1>Admin sign in</h1><p class="admin-auth-copy">Sign in with an authorized TaskFlow administrator account.</p>
+    {% with notices = get_flashed_messages(with_categories=true) %}{% if notices %}<div class="flash-stack">{% for category,message in notices %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+    <form method="post" class="admin-auth-form"><label for="email">Admin email</label><input id="email" name="email" type="email" autocomplete="username" required placeholder="admin@company.com"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required><button class="admin-button admin-button-primary" type="submit">Continue to control panel <span>→</span></button></form>
+    <a class="admin-back-link" href="{{ url_for('login') }}">← Back to TaskFlow workspace</a>
+  </main>
+  <p class="admin-auth-foot">ACCESS IS MONITORED · TASKFLOW PLATFORM CONTROL</p>
+</body>
+</html>

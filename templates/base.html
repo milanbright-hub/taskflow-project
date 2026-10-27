@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f9">
+  <title>{{ title }} · TaskFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='taskflow.css') }}">
+</head>
+<body class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">T</span><span class="brand-name">TaskFlow<small>PROJECT WORKSPACE</small></span></a>
+    <div class="workspace-switch"><span class="workspace-icon">{{ current_user.name[:1]|upper }}</span><span><b>{{ current_user.name }}</b><small>Personal workspace</small></span><span class="switch-chevron">⌄</span></div>
+    <nav class="side-nav" aria-label="Main navigation">
+      <p class="nav-label">WORKSPACE</p>
+      <a class="nav-link {% if page == 'dashboard' %}active{% endif %}" href="{{ url_for('index') }}"><span>▦</span>Dashboard</a>
+      <a class="nav-link {% if page == 'tasks' or page == 'task_form' %}active{% endif %}" href="{{ url_for('tasks_page') }}"><span>☑</span>Tasks</a>
+      <a class="nav-link {% if page in ['projects','project_form'] %}active{% endif %}" href="{{ url_for('projects_page') }}"><span>▣</span>Projects</a>
+      <a class="nav-link {% if page == 'analytics' %}active{% endif %}" href="{{ url_for('analytics_page') }}"><span>◫</span>Analytics</a>
+      <a class="nav-link {% if page == 'calendar' %}active{% endif %}" href="{{ url_for('calendar_page') }}"><span>▦</span>Calendar</a>
+      <p class="nav-label nav-label-spaced">COLLABORATE</p>
+      <a class="nav-link {% if page == 'team' %}active{% endif %}" href="{{ url_for('team_page') }}"><span>♧</span>Team members</a>
+      <a class="nav-link {% if page == 'reports' %}active{% endif %}" href="{{ url_for('reports_page') }}"><span>▤</span>Reports</a>
+      <a class="nav-link {% if page == 'messages' %}active{% endif %}" href="{{ url_for('messages_page') }}"><span>◌</span>Messages</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a class="nav-link {% if page == 'settings' %}active{% endif %}" href="{{ url_for('settings_page') }}"><span>⚙</span>Settings</a>
+      {% if current_user.role in ['Admin','Super Admin'] %}<a class="nav-link" href="{{ url_for('admin_dashboard') }}"><span>⌘</span>Admin console</a>{% endif %}
+      <form action="{{ url_for('logout') }}" method="post"><button class="nav-link logout-nav" type="submit"><span>↗</span>Logout</button></form>
+      <div class="sidebar-user"><span class="avatar">{{ current_user.name[:1]|upper }}</span><span class="user-label"><b>{{ current_user.name }}</b><small>{{ current_user.email }}</small></span><form action="{{ url_for('logout') }}" method="post"><button class="icon-button" type="submit" title="Log out" aria-label="Log out">↗</button></form></div>
+    </div>
+  </aside>
+  <div class="main-area">
+    <header class="topbar">
+      <button class="icon-button menu-button" id="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <form class="global-search" action="{{ url_for('search_page') }}" method="get"><span>⌕</span><input name="q" placeholder="Search projects, tasks..." aria-label="Search projects and tasks"><kbd>⌘ K</kbd></form>
+      <div class="topbar-actions"><a class="icon-button notification-link" href="{{ url_for('calendar_page') }}" title="Upcoming deadlines" aria-label="Upcoming deadlines">♧<i></i></a><span class="topbar-divider"></span><a class="profile-link" href="{{ url_for('settings_page') }}"><span class="avatar">{{ current_user.name[:1]|upper }}</span><span><b>{{ current_user.name }}</b><small>Workspace admin</small></span><span class="switch-chevron">⌄</span></a></div>
+    </header>
+    <main class="content">
+      <div class="page-heading"><div><p class="breadcrumb">WORKSPACE <span>/</span> {{ title|upper }}</p><h1>{{ title }}</h1></div>{% if page == 'dashboard' %}<a class="button primary" href="{{ url_for('projects_page') }}#new-project"><span>＋</span> New project</a>{% elif page == 'tasks' %}<a class="button primary" href="#new-task"><span>＋</span> New task</a>{% endif %}</div>
+      {% with notices = get_flashed_messages(with_categories=true) %}{% if notices %}<div class="flash-stack">{% for category, message in notices %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+      {% block content %}{% endblock %}
+      <footer class="app-footer">TaskFlow <span>·</span> Your work, in good order <span class="footer-year">{{ current_year }}</span></footer>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>
